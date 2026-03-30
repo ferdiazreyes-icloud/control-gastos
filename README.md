@@ -4,21 +4,24 @@
 
 ## Status
 
-**Version:** 0.1.0 (project setup — architecture defined, no code yet)
+**Version:** 0.2.0 (project foundation — backend + frontend structure, DB schema, Docker, CI/CD)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
 - [x] Architecture definition (TOGAF ADM artifacts in `.specify/`)
 - [x] Version roadmap (`tasks.md`)
+- [x] Backend project structure (FastAPI, models, routers, schemas, tests)
+- [x] Database schema (movements, categories, tags, processed_emails)
+- [x] Frontend project structure (Next.js, PWA manifest, Tailwind CSS)
+- [x] Docker Compose for local development (PostgreSQL + backend)
+- [x] CI/CD pipeline (GitHub Actions: lint, test, build)
+- [x] Makefile with standard commands
 
 ### Pending (MVP — V0)
-- [ ] Backend project structure (FastAPI + Docker)
-- [ ] Database schema and migrations (Supabase/PostgreSQL)
 - [ ] Gmail API integration (OAuth 2.0, email fetching)
 - [ ] AI analysis engine (Claude API, prompt engineering)
-- [ ] REST API for movements, categories, tags
-- [ ] Frontend PWA (Next.js, mobile-first)
-- [ ] Daily movement review flow (confirm/edit/discard)
+- [ ] Frontend screens (daily review, categories, tags, history)
+- [ ] End-to-end flow (Gmail → AI → API → UI)
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection
@@ -28,30 +31,78 @@
 
 | Layer | Technology |
 |---|---|
-| Backend | Python 3.12+ / FastAPI |
+| Backend | Python 3.9+ / FastAPI |
 | Frontend | Next.js 14+ / React / TypeScript |
-| Database | PostgreSQL via Supabase |
+| Database | PostgreSQL (Docker local, Supabase prod) |
 | AI | Claude API |
 | Hosting | Vercel (frontend) + Railway (backend) |
+
+## Project Structure
+
+```
+control-gastos/
+├── backend/                 # FastAPI backend
+│   ├── app/
+│   │   ├── models/          # SQLAlchemy models
+│   │   ├── routers/         # API endpoints
+│   │   ├── schemas/         # Pydantic schemas
+│   │   ├── services/        # Business logic
+│   │   ├── config.py        # Settings from env vars
+│   │   ├── database.py      # DB connection
+│   │   └── main.py          # FastAPI app
+│   ├── alembic/             # DB migrations
+│   ├── tests/               # pytest tests
+│   ├── Dockerfile
+│   └── pyproject.toml
+├── frontend/                # Next.js PWA
+│   ├── app/                 # Next.js App Router pages
+│   ├── components/          # React components
+│   ├── lib/                 # Utilities (API client, etc.)
+│   ├── public/              # Static assets + PWA manifest
+│   ├── Dockerfile
+│   └── package.json
+├── .github/workflows/       # CI/CD
+├── .specify/                # TOGAF ADM architecture docs
+├── docker-compose.yml       # Local dev environment
+├── Makefile                 # Standard commands
+└── tasks.md                 # Version roadmap
+```
 
 ## Getting Started
 
 ### Prerequisites
-- Python 3.12+
+- Python 3.9+
 - Node.js 20+
 - Docker & Docker Compose
-- Gmail account with API access (Google Cloud project)
-- Claude API key (Anthropic)
-- Supabase project (free tier)
 
 ### Run locally
+
 ```bash
+# Start backend + database
 make up
+
+# In another terminal, start frontend
+cd frontend && npm install && npm run dev
 ```
 
+- Backend API: http://localhost:8000
+- API docs (Swagger): http://localhost:8000/docs
+- Frontend: http://localhost:3000
+
 ### Run tests
+
 ```bash
 make test
+```
+
+### Other commands
+
+```bash
+make down          # Stop all containers
+make logs          # View container logs
+make lint          # Run linters (ruff + eslint)
+make migrate       # Run database migrations
+make migration msg="description"  # Create new migration
 ```
 
 ## Architecture

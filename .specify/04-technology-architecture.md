@@ -4,7 +4,7 @@
 
 | Layer | Technology | Version | Justification |
 |---|---|---|---|
-| **Language (backend)** | Python 3.12+ | 3.12 | Best ecosystem for AI integration, Gmail API, clear syntax |
+| **Language (backend)** | Python 3.9+ | 3.9+ | Best ecosystem for AI integration, Gmail API, clear syntax |
 | **Framework (backend)** | FastAPI | latest | Async, auto-generated API docs, type safety, lightweight |
 | **Language (frontend)** | TypeScript | 5.x | Type safety, better developer experience than JavaScript |
 | **Framework (frontend)** | Next.js (React) | 14+ | SSR, PWA support, great mobile experience, Vercel deployment |

@@ -8,12 +8,12 @@
 
 Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail, and confirm/discard them.
 
-### Phase 1: Project Foundation
-- [ ] Backend project structure (FastAPI, Docker, Makefile)
-- [ ] Database schema design and initial migration (Supabase/PostgreSQL)
-- [ ] Frontend project structure (Next.js, PWA config, Tailwind + shadcn/ui)
-- [ ] Docker Compose for local development
-- [ ] CI/CD pipeline (GitHub Actions: lint, test, build)
+### Phase 1: Project Foundation ✅
+- [x] Backend project structure (FastAPI, Docker, Makefile)
+- [x] Database schema design (movements, categories, tags, processed_emails)
+- [x] Frontend project structure (Next.js, PWA config, Tailwind)
+- [x] Docker Compose for local development
+- [x] CI/CD pipeline (GitHub Actions: lint, test, build)
 
 ### Phase 2: Gmail Integration
 - [ ] Google Cloud project setup (OAuth consent screen, credentials)
