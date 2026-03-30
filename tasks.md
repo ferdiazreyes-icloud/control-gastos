@@ -15,11 +15,11 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] Docker Compose for local development
 - [x] CI/CD pipeline (GitHub Actions: lint, test, build)
 
-### Phase 2: Gmail Integration
-- [ ] Google Cloud project setup (OAuth consent screen, credentials)
-- [ ] Gmail OAuth 2.0 flow (authenticate FerDi's account)
-- [ ] Email fetching service (read new emails since last check)
-- [ ] Email deduplication (track processed emails, avoid reprocessing)
+### Phase 2: Gmail Integration ✅
+- [x] Google Cloud project setup (OAuth consent screen, credentials)
+- [x] Gmail OAuth 2.0 flow (authenticate FerDi's account)
+- [x] Email fetching service (read new emails since last check)
+- [x] Email deduplication (track processed emails, avoid reprocessing)
 
 ### Phase 3: AI Analysis Engine
 - [ ] Claude API integration (client, error handling, retry logic)

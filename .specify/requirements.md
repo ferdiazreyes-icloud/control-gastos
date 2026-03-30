@@ -6,7 +6,7 @@
 
 | ID | Requirement | Priority | Status | Version |
 |---|---|---|---|---|
-| FR-01 | Connect to Gmail via OAuth 2.0 and fetch emails | Must have | Pending | V0 |
+| FR-01 | Connect to Gmail via OAuth 2.0 and fetch emails | Must have | Done | V0 |
 | FR-02 | AI analyzes each email to detect financial movements | Must have | Pending | V0 |
 | FR-03 | Extract from movements: type (income/expense/transfer), amount, currency, account/card, date/time, concept/merchant | Must have | Pending | V0 |
 | FR-04 | Store detected movements with status "pending" | Must have | Pending | V0 |
@@ -15,7 +15,7 @@
 | FR-07 | Manage custom categories (CRUD) | Must have | Pending | V0 |
 | FR-08 | Manage custom tags (CRUD) | Must have | Pending | V0 |
 | FR-09 | Browse confirmed movements by date | Must have | Pending | V0 |
-| FR-10 | Mark processed emails to avoid reprocessing | Must have | Pending | V0 |
+| FR-10 | Mark processed emails to avoid reprocessing | Must have | Done | V0 |
 | FR-11 | Export movements to CSV (MoneyStats compatible) | Should have | Pending | V1 |
 | FR-12 | AI suggests category based on historical patterns | Could have | Pending | V1 |
 | FR-13 | Detect recurring movements (subscriptions, etc.) | Could have | Pending | V1 |

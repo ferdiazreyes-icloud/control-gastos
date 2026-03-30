@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 0.2.0 (project foundation — backend + frontend structure, DB schema, Docker, CI/CD)
+**Version:** 0.3.0 (Gmail integration — OAuth 2.0 + email fetching)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -16,9 +16,11 @@
 - [x] Docker Compose for local development (PostgreSQL + backend)
 - [x] CI/CD pipeline (GitHub Actions: lint, test, build)
 - [x] Makefile with standard commands
+- [x] Gmail OAuth 2.0 flow (login, callback, token storage)
+- [x] Email fetching service (read emails, skip already processed)
+- [x] Auth and email API endpoints
 
 ### Pending (MVP — V0)
-- [ ] Gmail API integration (OAuth 2.0, email fetching)
 - [ ] AI analysis engine (Claude API, prompt engineering)
 - [ ] Frontend screens (daily review, categories, tags, history)
 - [ ] End-to-end flow (Gmail → AI → API → UI)

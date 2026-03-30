@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# OAuth tokens
+token.json
+
 # Python
 __pycache__/
 *.py[cod]
