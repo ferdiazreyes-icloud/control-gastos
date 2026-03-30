@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 0.3.0 (Gmail integration — OAuth 2.0 + email fetching)
+**Version:** 0.4.0 (AI analysis engine — Claude API + full pipeline)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -19,11 +19,13 @@
 - [x] Gmail OAuth 2.0 flow (login, callback, token storage)
 - [x] Email fetching service (read emails, skip already processed)
 - [x] Auth and email API endpoints
+- [x] AI analysis engine (Claude API, prompt engineering, structured extraction)
+- [x] Full pipeline: Gmail → AI → store movements as "pending"
+- [x] `/api/emails/process` endpoint (fetch + analyze + store in one call)
 
 ### Pending (MVP — V0)
-- [ ] AI analysis engine (Claude API, prompt engineering)
 - [ ] Frontend screens (daily review, categories, tags, history)
-- [ ] End-to-end flow (Gmail → AI → API → UI)
+- [ ] End-to-end testing with real emails
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection

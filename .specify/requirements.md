@@ -7,9 +7,9 @@
 | ID | Requirement | Priority | Status | Version |
 |---|---|---|---|---|
 | FR-01 | Connect to Gmail via OAuth 2.0 and fetch emails | Must have | Done | V0 |
-| FR-02 | AI analyzes each email to detect financial movements | Must have | Pending | V0 |
-| FR-03 | Extract from movements: type (income/expense/transfer), amount, currency, account/card, date/time, concept/merchant | Must have | Pending | V0 |
-| FR-04 | Store detected movements with status "pending" | Must have | Pending | V0 |
+| FR-02 | AI analyzes each email to detect financial movements | Must have | Done | V0 |
+| FR-03 | Extract from movements: type (income/expense/transfer), amount, currency, account/card, date/time, concept/merchant | Must have | Done | V0 |
+| FR-04 | Store detected movements with status "pending" | Must have | Done | V0 |
 | FR-05 | Display daily list of pending movements on iPhone | Must have | Pending | V0 |
 | FR-06 | Confirm, edit, or discard each pending movement | Must have | Pending | V0 |
 | FR-07 | Manage custom categories (CRUD) | Must have | Pending | V0 |

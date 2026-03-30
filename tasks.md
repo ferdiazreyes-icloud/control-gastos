@@ -21,12 +21,12 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] Email fetching service (read new emails since last check)
 - [x] Email deduplication (track processed emails, avoid reprocessing)
 
-### Phase 3: AI Analysis Engine
-- [ ] Claude API integration (client, error handling, retry logic)
-- [ ] Prompt engineering for financial movement detection in emails
-- [ ] Structured extraction: type, amount, currency, account, date, concept/merchant
-- [ ] Category suggestion based on merchant/concept
-- [ ] Email processing pipeline (fetch → analyze → store)
+### Phase 3: AI Analysis Engine ✅
+- [x] Claude API integration (client, error handling, retry logic)
+- [x] Prompt engineering for financial movement detection in emails
+- [x] Structured extraction: type, amount, currency, account, date, concept/merchant
+- [x] Category suggestion based on merchant/concept
+- [x] Email processing pipeline (fetch → analyze → store)
 
 ### Phase 4: Backend API
 - [ ] CRUD endpoints for movements (list, update status, edit)
