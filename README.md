@@ -1,22 +1,48 @@
-# [Project Name]
+# Control Gastos
 
-> [One-line description of what this project does]
+> AI-powered expense tracker that reads Gmail to detect and classify financial movements.
 
 ## Status
 
-**Version:** 0.0.0 (not started)
+**Version:** 0.1.0 (project setup — architecture defined, no code yet)
 
 ### Implemented
-- [ ] Project setup
+- [x] Project setup (repo, template, branch rules)
+- [x] Architecture definition (TOGAF ADM artifacts in `.specify/`)
+- [x] Version roadmap (`tasks.md`)
 
-### Pending
-- [ ] Define architecture (TOGAF ADM artifacts in `.specify/`)
-- [ ] Implement MVP
+### Pending (MVP — V0)
+- [ ] Backend project structure (FastAPI + Docker)
+- [ ] Database schema and migrations (Supabase/PostgreSQL)
+- [ ] Gmail API integration (OAuth 2.0, email fetching)
+- [ ] AI analysis engine (Claude API, prompt engineering)
+- [ ] REST API for movements, categories, tags
+- [ ] Frontend PWA (Next.js, mobile-first)
+- [ ] Daily movement review flow (confirm/edit/discard)
+
+### Future Versions
+- **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection
+- **V2:** React Native migration, push notifications, full MoneyStats replacement
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.12+ / FastAPI |
+| Frontend | Next.js 14+ / React / TypeScript |
+| Database | PostgreSQL via Supabase |
+| AI | Claude API |
+| Hosting | Vercel (frontend) + Railway (backend) |
 
 ## Getting Started
 
 ### Prerequisites
-- [List prerequisites here]
+- Python 3.12+
+- Node.js 20+
+- Docker & Docker Compose
+- Gmail account with API access (Google Cloud project)
+- Claude API key (Anthropic)
+- Supabase project (free tier)
 
 ### Run locally
 ```bash

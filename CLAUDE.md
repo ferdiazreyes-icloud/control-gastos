@@ -10,10 +10,11 @@ Ruleset for this project. NON-NEGOTIABLE.
 
 ## Project Context
 
-- **Name:** [project name]
-- **Description:** [one-line description]
-- **Client/Owner:** [who is this for]
+- **Name:** Control Gastos
+- **Description:** AI-powered expense tracker that reads Gmail to detect and classify financial movements
+- **Client/Owner:** FerDi (personal use)
 - **ADM artifacts:** `.specify/` — read these for full architecture context
+- **Stack:** Python (FastAPI) backend + Next.js (React) PWA frontend + Supabase (PostgreSQL) + Claude API
 
 ---
 
