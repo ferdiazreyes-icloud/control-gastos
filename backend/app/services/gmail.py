@@ -1,9 +1,11 @@
 import base64
 import json
 import os
+import re
 from email.utils import parsedate_to_datetime
 from typing import Optional
 
+from bs4 import BeautifulSoup
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
@@ -122,24 +124,45 @@ def _get_gmail_service():
     return build("gmail", "v1", credentials=credentials)
 
 
+def _strip_html(html: str) -> str:
+    """Convert HTML to clean plain text for AI processing."""
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Remove script and style elements
+    for element in soup(["script", "style", "head"]):
+        element.decompose()
+
+    # Get text and clean up whitespace
+    text = soup.get_text(separator="\n")
+    # Collapse multiple blank lines into one
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    # Strip leading/trailing whitespace per line
+    lines = [line.strip() for line in text.splitlines()]
+    text = "\n".join(line for line in lines if line)
+
+    return text
+
+
 def _decode_body(payload: dict) -> str:
     """Extract and decode the email body text from a Gmail message payload."""
     # Check for direct body data
     if payload.get("body", {}).get("data"):
-        return base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
+        raw = base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
+        return _strip_html(raw) if "<" in raw else raw
 
-    # Check multipart parts
+    # Check multipart parts — prefer text/plain
     parts = payload.get("parts", [])
     for part in parts:
         mime_type = part.get("mimeType", "")
         if mime_type == "text/plain" and part.get("body", {}).get("data"):
             return base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
 
-    # Fallback: try text/html
+    # Fallback: text/html → strip to plain text
     for part in parts:
         mime_type = part.get("mimeType", "")
         if mime_type == "text/html" and part.get("body", {}).get("data"):
-            return base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
+            html = base64.urlsafe_b64decode(part["body"]["data"]).decode("utf-8")
+            return _strip_html(html)
 
     # Nested multipart
     for part in parts:

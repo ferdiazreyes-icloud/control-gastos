@@ -95,6 +95,13 @@ def analyze_email(email: dict, max_retries: int = 2) -> dict:
 
             response_text = message.content[0].text.strip()
 
+            # Strip markdown code fences if present
+            if response_text.startswith("```"):
+                response_text = response_text.split("\n", 1)[-1]
+                if response_text.endswith("```"):
+                    response_text = response_text[:-3]
+                response_text = response_text.strip()
+
             # Parse JSON response
             result = json.loads(response_text)
 

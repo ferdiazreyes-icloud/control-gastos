@@ -48,11 +48,14 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] History view (browse movements with status filters)
 - [x] Mobile-first responsive design with bottom navigation
 
-### Phase 6: Integration & Polish
-- [ ] End-to-end flow testing (Gmail → AI → API → UI)
-- [ ] Error handling and edge cases
+### Phase 6: Integration & Polish ✅
+- [x] End-to-end flow testing (Gmail → AI → API → UI)
+- [x] HTML email cleanup (BeautifulSoup → clean text for AI)
+- [x] AI response parsing fix (markdown code fence stripping)
+- [x] User acceptance testing with FerDi (test email: Walmart $847.50)
+- [ ] Improve detection for complex bank email formats (ongoing)
 - [ ] Performance optimization (< 3s load time on iPhone)
-- [ ] User acceptance testing with FerDi
+- [ ] Deploy to production
 
 ---
 

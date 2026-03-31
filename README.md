@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 0.6.0 (MVP frontend — all screens built, mobile-first PWA)
+**Version:** 1.0.0-mvp (MVP complete — Gmail → AI → review on iPhone)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -34,9 +34,14 @@
 - [x] Frontend PWA: bottom navigation, mobile-first responsive design
 - [x] Frontend PWA: edit movement modal (change amount, type, category, tags)
 
-### Pending (MVP — V0)
-- [ ] End-to-end polish (improve AI detection for HTML-heavy emails)
+- [x] HTML email cleanup (BeautifulSoup strips HTML → clean text for AI)
+- [x] AI response parsing fix (strip markdown code fences from Claude responses)
+- [x] End-to-end validated: Gmail → AI → movement appears in app
+
+### Pending (polish)
+- [ ] Improve AI detection for complex bank email formats
 - [ ] Playwright tests for frontend
+- [ ] Deploy to production (Vercel + Railway + Supabase)
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection
