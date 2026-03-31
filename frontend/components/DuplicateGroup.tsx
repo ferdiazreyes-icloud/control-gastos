@@ -35,6 +35,7 @@ export default function DuplicateGroup({
           <MovementCard
             movement={movement}
             showActions={false}
+            showEmailInfo={true}
           />
           <div className="flex gap-2 px-1">
             <button

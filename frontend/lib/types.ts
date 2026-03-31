@@ -31,6 +31,8 @@ export interface Movement {
   status: MovementStatus;
   notes: string | null;
   source_email_id: string | null;
+  source_email_sender: string | null;
+  source_email_subject: string | null;
   duplicate_group_id: string | null;
   is_duplicate: boolean;
   superseded_by_id: string | null;

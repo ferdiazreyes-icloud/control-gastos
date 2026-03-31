@@ -14,6 +14,7 @@ interface MovementCardProps {
   onDiscard?: () => void;
   onEdit?: () => void;
   showActions?: boolean;
+  showEmailInfo?: boolean;
 }
 
 export default function MovementCard({
@@ -22,6 +23,7 @@ export default function MovementCard({
   onDiscard,
   onEdit,
   showActions = true,
+  showEmailInfo = false,
 }: MovementCardProps) {
   const typeInfo = typeLabels[movement.type];
   const date = new Date(movement.movement_date);
@@ -84,6 +86,31 @@ export default function MovementCard({
           </span>
         ))}
       </div>
+
+      {showEmailInfo && movement.source_email_id && (
+        <div className="bg-slate-50 rounded-lg p-2.5 space-y-1 text-xs">
+          {movement.source_email_sender && (
+            <p className="text-slate-600">
+              <span className="font-medium">De:</span>{" "}
+              {movement.source_email_sender}
+            </p>
+          )}
+          {movement.source_email_subject && (
+            <p className="text-slate-500 truncate">
+              <span className="font-medium">Asunto:</span>{" "}
+              {movement.source_email_subject}
+            </p>
+          )}
+          <a
+            href={`https://mail.google.com/mail/u/0/#inbox/${movement.source_email_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            Ver correo en Gmail
+          </a>
+        </div>
+      )}
 
       {showActions && movement.status === "pending" && (
         <div className="flex gap-2 pt-1">

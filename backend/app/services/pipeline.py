@@ -162,6 +162,8 @@ async def process_emails(
                     merchant=mov_data.get("merchant"),
                     status=MovementStatus.PENDING,
                     source_email_id=email_id,
+                    source_email_sender=result_item.get("sender", ""),
+                    source_email_subject=result_item.get("subject", ""),
                 )
 
                 # Check for duplicates before storing

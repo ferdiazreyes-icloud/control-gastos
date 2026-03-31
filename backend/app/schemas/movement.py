@@ -50,6 +50,8 @@ class MovementResponse(BaseModel):
     status: MovementStatus
     notes: Optional[str]
     source_email_id: Optional[str]
+    source_email_sender: Optional[str]
+    source_email_subject: Optional[str]
     duplicate_group_id: Optional[uuid.UUID]
     is_duplicate: bool
     superseded_by_id: Optional[uuid.UUID]

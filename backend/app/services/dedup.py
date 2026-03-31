@@ -169,17 +169,27 @@ async def check_duplicates(
     if not best_match.duplicate_group_id:
         best_match.duplicate_group_id = group_id
 
-    # Handle pre-auth: old one is superseded by new
+    # Handle pre-auth: old one is superseded and auto-discarded
     if _is_pre_auth(best_match):
         best_match.superseded_by_id = new_movement.id
         best_match.is_duplicate = True
+        best_match.status = MovementStatus.DISCARDED
+        # New movement is NOT a duplicate — it's the real charge
+        new_movement.duplicate_group_id = None
+        new_movement.is_duplicate = False
+        return None
 
-    # Handle progressive updates: old superseded by new
+    # Handle progressive updates: old superseded and auto-discarded
     if _is_progressive_update(new_movement, best_match):
         best_match.superseded_by_id = new_movement.id
         best_match.is_duplicate = True
+        best_match.status = MovementStatus.DISCARDED
+        # New movement is the latest truth — not a duplicate
+        new_movement.duplicate_group_id = None
+        new_movement.is_duplicate = False
+        return None
 
-    # Mark new movement as duplicate
+    # Mark both as part of duplicate group (user decides)
     new_movement.duplicate_group_id = group_id
     new_movement.is_duplicate = True
 

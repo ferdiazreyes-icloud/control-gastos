@@ -42,6 +42,12 @@ class Movement(Base):
     )
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     source_email_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    source_email_sender: Mapped[Optional[str]] = mapped_column(
+        String(255), nullable=True
+    )
+    source_email_subject: Mapped[Optional[str]] = mapped_column(
+        String(500), nullable=True
+    )
 
     # Deduplication
     duplicate_group_id: Mapped[Optional[uuid.UUID]] = mapped_column(
