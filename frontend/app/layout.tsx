@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "Control Gastos",
@@ -26,8 +27,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className="bg-slate-50 text-slate-900 min-h-screen">
-        <main className="max-w-md mx-auto px-4 py-6">{children}</main>
+      <body className="bg-slate-50 text-slate-900 min-h-screen pb-20">
+        <main className="max-w-md mx-auto px-4 py-4">{children}</main>
+        <BottomNav />
       </body>
     </html>
   );

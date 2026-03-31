@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 0.5.0 (backend complete — all APIs validated against real services)
+**Version:** 0.6.0 (MVP frontend — all screens built, mobile-first PWA)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -27,9 +27,16 @@
 - [x] Initial DB migration (Alembic)
 - [x] Integration tested: all APIs validated against real PostgreSQL, Gmail, and Claude API
 
+- [x] Frontend PWA: daily review screen (confirm/edit/discard movements)
+- [x] Frontend PWA: history view with filters (confirmed/discarded/all)
+- [x] Frontend PWA: category management (create/delete)
+- [x] Frontend PWA: tag management (create/delete)
+- [x] Frontend PWA: bottom navigation, mobile-first responsive design
+- [x] Frontend PWA: edit movement modal (change amount, type, category, tags)
+
 ### Pending (MVP — V0)
-- [ ] Frontend screens (daily review, categories, tags, history)
 - [ ] End-to-end polish (improve AI detection for HTML-heavy emails)
+- [ ] Playwright tests for frontend
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection

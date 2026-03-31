@@ -38,14 +38,15 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] Initial DB migration (Alembic)
 - [x] Integration testing against real services (PostgreSQL, Gmail, Claude API)
 
-### Phase 5: Frontend PWA
-- [ ] PWA setup (manifest, service worker, installable on iPhone)
-- [ ] Daily movement review screen (list of pending movements)
-- [ ] Confirm/edit/discard flow for each movement
-- [ ] Category management screen
-- [ ] Tag management screen
-- [ ] History view (browse confirmed movements by date)
-- [ ] Mobile-first responsive design
+### Phase 5: Frontend PWA ✅
+- [x] PWA setup (manifest, installable on iPhone)
+- [x] Daily movement review screen (list of pending movements)
+- [x] Confirm/edit/discard flow for each movement
+- [x] Edit movement modal (amount, type, category, tags)
+- [x] Category management screen (create/delete)
+- [x] Tag management screen (create/delete)
+- [x] History view (browse movements with status filters)
+- [x] Mobile-first responsive design with bottom navigation
 
 ### Phase 6: Integration & Polish
 - [ ] End-to-end flow testing (Gmail → AI → API → UI)
