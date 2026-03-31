@@ -37,11 +37,11 @@
 - [x] HTML email cleanup (BeautifulSoup strips HTML → clean text for AI)
 - [x] AI response parsing fix (strip markdown code fences from Claude responses)
 - [x] End-to-end validated: Gmail → AI → movement appears in app
+- [x] Bank email detection validated: Santander, Banamex, Uber, Uber Eats, PayPal (7/7 detected, 0 false positives)
 
-### Pending (polish)
-- [ ] Improve AI detection for complex bank email formats
-- [ ] Playwright tests for frontend
+### Pending (next steps)
 - [ ] Deploy to production (Vercel + Railway + Supabase)
+- [ ] Playwright tests for frontend
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection
