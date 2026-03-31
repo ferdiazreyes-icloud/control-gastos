@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import timedelta
+from datetime import timedelta, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -52,7 +52,14 @@ def _score_match(new: Movement, existing: Movement) -> int:
 
     # Date within window (+15)
     if new.movement_date and existing.movement_date:
-        time_diff = abs(new.movement_date - existing.movement_date)
+        # Normalize both to UTC-aware for comparison
+        new_date = new.movement_date
+        existing_date = existing.movement_date
+        if new_date.tzinfo is None:
+            new_date = new_date.replace(tzinfo=timezone.utc)
+        if existing_date.tzinfo is None:
+            existing_date = existing_date.replace(tzinfo=timezone.utc)
+        time_diff = abs(new_date - existing_date)
         if time_diff <= timedelta(hours=DATE_WINDOW_HOURS):
             score += 15
 
@@ -88,7 +95,13 @@ def _is_progressive_update(new: Movement, existing: Movement) -> bool:
 
     # Must be within 24 hours
     if new.movement_date and existing.movement_date:
-        time_diff = abs(new.movement_date - existing.movement_date)
+        new_date = new.movement_date
+        existing_date = existing.movement_date
+        if new_date.tzinfo is None:
+            new_date = new_date.replace(tzinfo=timezone.utc)
+        if existing_date.tzinfo is None:
+            existing_date = existing_date.replace(tzinfo=timezone.utc)
+        time_diff = abs(new_date - existing_date)
         if time_diff > timedelta(hours=24):
             return False
 
@@ -114,7 +127,10 @@ async def check_duplicates(
         on existing movements when appropriate.
     """
     # Query recent movements (7 days, same currency, pending or confirmed)
-    cutoff_date = new_movement.movement_date - timedelta(days=7)
+    mov_date = new_movement.movement_date
+    if mov_date.tzinfo is None:
+        mov_date = mov_date.replace(tzinfo=timezone.utc)
+    cutoff_date = mov_date - timedelta(days=7)
     result = await db.execute(
         select(Movement).where(
             Movement.currency == new_movement.currency,

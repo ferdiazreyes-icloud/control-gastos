@@ -49,7 +49,7 @@ def test_score_exact_match():
 
 
 def test_score_same_amount_different_merchant():
-    """Same amount + date + account but different merchant still flags as potential dup."""
+    """Same amount+date+account, different merchant: still flags."""
     m1 = _make_movement(merchant="Walmart")
     m2 = _make_movement(merchant="Costco")
     score = _score_match(m1, m2)
