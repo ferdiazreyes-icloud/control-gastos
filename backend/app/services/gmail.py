@@ -186,6 +186,7 @@ def fetch_emails(
     max_results: int = 50,
     after_date: Optional[str] = None,
     processed_ids: Optional[set] = None,
+    sender_patterns: Optional[list[str]] = None,
 ) -> list[dict]:
     """
     Fetch emails from Gmail.
@@ -194,6 +195,8 @@ def fetch_emails(
         max_results: Maximum number of emails to fetch.
         after_date: Only fetch emails after this date (format: YYYY/MM/DD).
         processed_ids: Set of Gmail message IDs already processed (to skip).
+        sender_patterns: List of sender email patterns to filter by
+            (e.g. ["@santander.com.mx", "noreply@uber.com"]).
 
     Returns:
         List of dicts with email data: id, subject, sender, date, body.
@@ -204,6 +207,11 @@ def fetch_emails(
     query_parts = []
     if after_date:
         query_parts.append(f"after:{after_date}")
+
+    # Build sender filter: from:(@santander.com.mx OR noreply@uber.com OR ...)
+    if sender_patterns:
+        from_clauses = " OR ".join(f"from:{pattern}" for pattern in sender_patterns)
+        query_parts.append(f"({from_clauses})")
 
     query = " ".join(query_parts) if query_parts else None
 

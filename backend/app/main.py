@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, categories, emails, health, movements, tags
+from app.routers import auth, categories, emails, health, movements, senders, tags
 
 app = FastAPI(
     title="Control Gastos API",
@@ -24,3 +24,4 @@ app.include_router(movements.router, prefix="/api/movements", tags=["movements"]
 app.include_router(categories.router, prefix="/api/categories", tags=["categories"])
 app.include_router(tags.router, prefix="/api/tags", tags=["tags"])
 app.include_router(emails.router, prefix="/api/emails", tags=["emails"])
+app.include_router(senders.router, prefix="/api/senders", tags=["senders"])

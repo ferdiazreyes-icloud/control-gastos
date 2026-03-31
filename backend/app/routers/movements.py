@@ -100,3 +100,52 @@ async def delete_movement(movement_id: uuid.UUID, db: AsyncSession = Depends(get
 
     await db.delete(movement)
     await db.commit()
+
+
+@router.post("/{movement_id}/keep", response_model=MovementResponse)
+async def keep_movement(movement_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    """Keep this movement and discard others in the same duplicate group."""
+    movement = await db.get(Movement, movement_id)
+    if not movement:
+        raise HTTPException(status_code=404, detail="Movement not found")
+    if not movement.duplicate_group_id:
+        raise HTTPException(
+            status_code=400, detail="Movement is not part of a duplicate group"
+        )
+
+    # Confirm this movement
+    movement.status = MovementStatus.CONFIRMED
+    movement.is_duplicate = False
+
+    # Discard all others in the same group
+    result = await db.execute(
+        select(Movement).where(
+            Movement.duplicate_group_id == movement.duplicate_group_id,
+            Movement.id != movement_id,
+        )
+    )
+    for other in result.scalars().all():
+        other.status = MovementStatus.DISCARDED
+        other.is_duplicate = True
+
+    await db.commit()
+    await db.refresh(movement)
+    return movement
+
+
+@router.post("/{movement_id}/not-duplicate", response_model=MovementResponse)
+async def mark_not_duplicate(
+    movement_id: uuid.UUID, db: AsyncSession = Depends(get_db)
+):
+    """Remove a movement from its duplicate group."""
+    movement = await db.get(Movement, movement_id)
+    if not movement:
+        raise HTTPException(status_code=404, detail="Movement not found")
+
+    movement.duplicate_group_id = None
+    movement.is_duplicate = False
+    movement.superseded_by_id = None
+
+    await db.commit()
+    await db.refresh(movement)
+    return movement

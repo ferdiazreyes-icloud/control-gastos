@@ -31,8 +31,20 @@ export interface Movement {
   status: MovementStatus;
   notes: string | null;
   source_email_id: string | null;
+  duplicate_group_id: string | null;
+  is_duplicate: boolean;
+  superseded_by_id: string | null;
   category: Category | null;
   tags: Tag[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Sender {
+  id: string;
+  email_pattern: string;
+  name: string;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -42,6 +54,7 @@ export interface ProcessResult {
   emails_fetched: number;
   movements_detected: number;
   movements_stored: number;
+  duplicates_found: number;
   details: {
     email_id: string;
     subject: string;

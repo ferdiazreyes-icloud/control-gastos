@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 1.0.0-mvp (MVP complete — Gmail → AI → review on iPhone)
+**Version:** 1.1.0 (dedup + sender whitelist — smart email filtering and duplicate detection)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -38,6 +38,12 @@
 - [x] AI response parsing fix (strip markdown code fences from Claude responses)
 - [x] End-to-end validated: Gmail → AI → movement appears in app
 - [x] Bank email detection validated: Santander, Banamex, Uber, Uber Eats, PayPal (7/7 detected, 0 false positives)
+- [x] Sender whitelist: only analyze emails from known financial senders (dynamic, manageable from app)
+- [x] Auto-date filter: only fetch emails since last processing run
+- [x] Duplicate detection: scoring algorithm (amount + merchant + date + account)
+- [x] Pre-auth and progressive email handling (Uber $1 holds, Uber Eats multi-email)
+- [x] Duplicate UI: grouped cards with "Conservar este" / "No son duplicados"
+- [x] Senders management screen (add/remove sender patterns)
 
 ### Pending (next steps)
 - [ ] Deploy to production (Vercel + Railway + Supabase)

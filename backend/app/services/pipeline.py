@@ -8,7 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.movement import Movement, MovementStatus, MovementType
 from app.models.processed_email import ProcessedEmail
+from app.models.sender_whitelist import SenderWhitelist
 from app.services.analyzer import analyze_emails
+from app.services.dedup import check_duplicates
 from app.services.gmail import fetch_emails
 
 logger = logging.getLogger(__name__)
@@ -39,7 +41,6 @@ def _parse_datetime(date_str: Optional[str]) -> Optional[datetime]:
     if not date_str:
         return None
 
-    # Try ISO format first
     for fmt in [
         "%Y-%m-%dT%H:%M:%S",
         "%Y-%m-%dT%H:%M:%S%z",
@@ -53,31 +54,56 @@ def _parse_datetime(date_str: Optional[str]) -> Optional[datetime]:
     return None
 
 
+async def _get_sender_patterns(db: AsyncSession) -> list[str]:
+    """Load active sender patterns from the whitelist."""
+    result = await db.execute(
+        select(SenderWhitelist.email_pattern).where(SenderWhitelist.is_active.is_(True))
+    )
+    return [row[0] for row in result.all()]
+
+
+async def _get_last_processed_date(db: AsyncSession) -> Optional[str]:
+    """Get the date of the last processed email for auto-dating."""
+    result = await db.execute(
+        select(ProcessedEmail.processed_at)
+        .order_by(ProcessedEmail.processed_at.desc())
+        .limit(1)
+    )
+    row = result.scalar_one_or_none()
+    if row:
+        return row.strftime("%Y/%m/%d")
+    return None
+
+
 async def process_emails(
     db: AsyncSession,
     max_results: int = 50,
     after_date: Optional[str] = None,
 ) -> dict:
     """
-    Full pipeline: fetch emails → analyze with AI → store movements.
+    Full pipeline: fetch emails → analyze with AI → deduplicate → store.
 
-    Args:
-        db: Database session.
-        max_results: Max emails to fetch from Gmail.
-        after_date: Only fetch emails after this date (YYYY/MM/DD).
-
-    Returns:
-        Summary dict with counts of processed, detected, and stored movements.
+    Uses sender whitelist to filter Gmail queries.
+    Uses auto-date from last processed email if no after_date given.
+    Checks for duplicates before storing movements.
     """
     # Step 1: Get already processed email IDs
     result = await db.execute(select(ProcessedEmail.gmail_message_id))
     processed_ids = {row[0] for row in result.all()}
 
-    # Step 2: Fetch new emails from Gmail
+    # Step 2: Load sender whitelist patterns
+    sender_patterns = await _get_sender_patterns(db)
+
+    # Step 3: Auto-date if not provided
+    if not after_date:
+        after_date = await _get_last_processed_date(db)
+
+    # Step 4: Fetch new emails from Gmail (filtered by senders + date)
     emails = fetch_emails(
         max_results=max_results,
         after_date=after_date,
         processed_ids=processed_ids,
+        sender_patterns=sender_patterns if sender_patterns else None,
     )
 
     if not emails:
@@ -86,14 +112,16 @@ async def process_emails(
             "emails_fetched": 0,
             "movements_detected": 0,
             "movements_stored": 0,
+            "duplicates_found": 0,
             "details": [],
         }
 
-    # Step 3: Analyze emails with Claude AI
+    # Step 5: Analyze emails with Claude AI
     analysis_results = analyze_emails(emails)
 
-    # Step 4: Store results in database
+    # Step 6: Store results with deduplication
     movements_stored = 0
+    duplicates_found = 0
     details = []
 
     for result_item in analysis_results:
@@ -120,7 +148,6 @@ async def process_emails(
 
                 movement_date = _parse_datetime(mov_data.get("movement_date"))
                 if movement_date is None:
-                    # Fallback to email date
                     movement_date = _parse_datetime(result_item.get("date"))
                 if movement_date is None:
                     movement_date = datetime.now(timezone.utc)
@@ -136,6 +163,12 @@ async def process_emails(
                     status=MovementStatus.PENDING,
                     source_email_id=email_id,
                 )
+
+                # Check for duplicates before storing
+                group_id = await check_duplicates(movement, db)
+                if group_id:
+                    duplicates_found += 1
+
                 db.add(movement)
                 movements_stored += 1
 
@@ -155,5 +188,6 @@ async def process_emails(
         "emails_fetched": len(emails),
         "movements_detected": sum(1 for d in details if d["has_movement"]),
         "movements_stored": movements_stored,
+        "duplicates_found": duplicates_found,
         "details": details,
     }

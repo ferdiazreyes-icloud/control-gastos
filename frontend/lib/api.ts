@@ -1,4 +1,4 @@
-import { Category, Movement, MovementStatus, ProcessResult, Tag } from "./types";
+import { Category, Movement, MovementStatus, ProcessResult, Sender, Tag } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -80,6 +80,25 @@ export const processEmails = (maxResults = 20) =>
   apiFetch<ProcessResult>(`/api/emails/process?max_results=${maxResults}`, {
     method: "POST",
   });
+
+// Senders (whitelist)
+export const getSenders = () => apiFetch<Sender[]>("/api/senders/");
+
+export const createSender = (data: { email_pattern: string; name: string }) =>
+  apiFetch<Sender>("/api/senders/", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+export const deleteSender = (id: string) =>
+  apiFetch<void>(`/api/senders/${id}`, { method: "DELETE" });
+
+// Dedup actions
+export const keepMovement = (id: string) =>
+  apiFetch<Movement>(`/api/movements/${id}/keep`, { method: "POST" });
+
+export const markNotDuplicate = (id: string) =>
+  apiFetch<Movement>(`/api/movements/${id}/not-duplicate`, { method: "POST" });
 
 // Auth
 export const getAuthStatus = () =>

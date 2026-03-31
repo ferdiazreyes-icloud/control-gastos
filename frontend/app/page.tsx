@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import MovementCard from "@/components/MovementCard";
 import EditMovementModal from "@/components/EditMovementModal";
+import DuplicateGroup from "@/components/DuplicateGroup";
 import {
   getMovements,
   updateMovement,
@@ -10,6 +11,8 @@ import {
   getTags,
   processEmails,
   getAuthStatus,
+  keepMovement,
+  markNotDuplicate,
 } from "@/lib/api";
 import { Category, Movement, Tag } from "@/lib/types";
 
@@ -51,9 +54,14 @@ export default function ReviewPage() {
     setProcessResult(null);
     try {
       const result = await processEmails(20);
-      setProcessResult(
-        `${result.emails_fetched} correos analizados, ${result.movements_stored} movimientos detectados`
-      );
+      const parts = [
+        `${result.emails_fetched} correos analizados`,
+        `${result.movements_stored} movimientos detectados`,
+      ];
+      if (result.duplicates_found) {
+        parts.push(`${result.duplicates_found} posibles duplicados`);
+      }
+      setProcessResult(parts.join(", "));
       await loadData();
     } catch (err) {
       setProcessResult("Error al procesar correos");
@@ -82,6 +90,30 @@ export default function ReviewPage() {
     setEditingMovement(null);
     await loadData();
   };
+
+  const handleKeep = async (id: string) => {
+    await keepMovement(id);
+    await loadData();
+  };
+
+  const handleNotDuplicate = async (id: string) => {
+    await markNotDuplicate(id);
+    await loadData();
+  };
+
+  // Group movements: duplicates together, singles separate
+  const duplicateGroups = new Map<string, Movement[]>();
+  const singleMovements: Movement[] = [];
+
+  movements.forEach((m) => {
+    if (m.duplicate_group_id) {
+      const group = duplicateGroups.get(m.duplicate_group_id) || [];
+      group.push(m);
+      duplicateGroups.set(m.duplicate_group_id, group);
+    } else {
+      singleMovements.push(m);
+    }
+  });
 
   if (loading) {
     return (
@@ -141,7 +173,19 @@ export default function ReviewPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {movements.map((movement) => (
+          {/* Duplicate groups first */}
+          {Array.from(duplicateGroups.values()).map((group) => (
+            <DuplicateGroup
+              key={group[0].duplicate_group_id!}
+              movements={group}
+              onKeep={handleKeep}
+              onNotDuplicate={handleNotDuplicate}
+              onEdit={handleEdit}
+            />
+          ))}
+
+          {/* Single movements */}
+          {singleMovements.map((movement) => (
             <MovementCard
               key={movement.id}
               movement={movement}

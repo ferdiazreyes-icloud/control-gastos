@@ -8,6 +8,7 @@ const navItems = [
   { href: "/history", label: "Historial", icon: "📊" },
   { href: "/categories", label: "Categorías", icon: "🏷️" },
   { href: "/tags", label: "Tags", icon: "🔖" },
+  { href: "/senders", label: "Remitentes", icon: "📨" },
 ];
 
 export default function BottomNav() {

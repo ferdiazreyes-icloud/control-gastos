@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Numeric, String, Text
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -42,6 +42,15 @@ class Movement(Base):
     )
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     source_email_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+
+    # Deduplication
+    duplicate_group_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )
+    is_duplicate: Mapped[bool] = mapped_column(Boolean, default=False)
+    superseded_by_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("movements.id"), nullable=True
+    )
 
     # Relationships
     category_id: Mapped[Optional[uuid.UUID]] = mapped_column(
