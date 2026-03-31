@@ -28,12 +28,15 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] Category suggestion based on merchant/concept
 - [x] Email processing pipeline (fetch → analyze → store)
 
-### Phase 4: Backend API
-- [ ] CRUD endpoints for movements (list, update status, edit)
-- [ ] CRUD endpoints for categories
-- [ ] CRUD endpoints for tags
-- [ ] Filter movements by date, status, category
-- [ ] Trigger email ingestion endpoint (on-demand processing)
+### Phase 4: Backend API ✅
+- [x] CRUD endpoints for movements (list, update status, edit)
+- [x] CRUD endpoints for categories
+- [x] CRUD endpoints for tags
+- [x] Filter movements by date, status, category
+- [x] Trigger email ingestion endpoint (on-demand processing)
+- [x] Gmail OAuth PKCE fix (validated with real Google auth)
+- [x] Initial DB migration (Alembic)
+- [x] Integration testing against real services (PostgreSQL, Gmail, Claude API)
 
 ### Phase 5: Frontend PWA
 - [ ] PWA setup (manifest, service worker, installable on iPhone)

@@ -12,6 +12,7 @@ from app.config import settings
 
 # Path to store OAuth tokens (single user, file-based for MVP)
 TOKEN_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "token.json")
+STATE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "oauth_state.json")
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 
@@ -29,28 +30,45 @@ def _get_client_config() -> dict:
     }
 
 
-def get_auth_url() -> str:
-    """Generate the Google OAuth authorization URL."""
-    flow = Flow.from_client_config(
+def _create_flow() -> Flow:
+    """Create a new OAuth flow instance."""
+    return Flow.from_client_config(
         _get_client_config(),
         scopes=SCOPES,
         redirect_uri=settings.google_redirect_uri,
     )
-    auth_url, _ = flow.authorization_url(
+
+
+def get_auth_url() -> str:
+    """Generate the Google OAuth authorization URL with PKCE."""
+    flow = _create_flow()
+    auth_url, state = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
         prompt="consent",
     )
+
+    # Save flow state including code_verifier for PKCE
+    state_data = {
+        "state": state,
+        "code_verifier": flow.code_verifier,
+    }
+    with open(STATE_PATH, "w") as f:
+        json.dump(state_data, f)
+
     return auth_url
 
 
 def exchange_code_for_tokens(code: str) -> dict:
     """Exchange the authorization code for access and refresh tokens."""
-    flow = Flow.from_client_config(
-        _get_client_config(),
-        scopes=SCOPES,
-        redirect_uri=settings.google_redirect_uri,
-    )
+    flow = _create_flow()
+
+    # Restore code_verifier from saved state for PKCE
+    if os.path.exists(STATE_PATH):
+        with open(STATE_PATH) as f:
+            state_data = json.load(f)
+        flow.code_verifier = state_data.get("code_verifier")
+
     flow.fetch_token(code=code)
     credentials = flow.credentials
 

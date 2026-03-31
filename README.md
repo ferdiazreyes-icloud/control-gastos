@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 0.4.0 (AI analysis engine — Claude API + full pipeline)
+**Version:** 0.5.0 (backend complete — all APIs validated against real services)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -23,9 +23,13 @@
 - [x] Full pipeline: Gmail → AI → store movements as "pending"
 - [x] `/api/emails/process` endpoint (fetch + analyze + store in one call)
 
+- [x] Gmail OAuth PKCE fix (validated with real Google auth)
+- [x] Initial DB migration (Alembic)
+- [x] Integration tested: all APIs validated against real PostgreSQL, Gmail, and Claude API
+
 ### Pending (MVP — V0)
 - [ ] Frontend screens (daily review, categories, tags, history)
-- [ ] End-to-end testing with real emails
+- [ ] End-to-end polish (improve AI detection for HTML-heavy emails)
 
 ### Future Versions
 - **V1:** MoneyStats CSV export, AI-suggested categories, recurring movement detection

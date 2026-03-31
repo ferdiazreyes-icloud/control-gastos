@@ -12,9 +12,9 @@
 | FR-04 | Store detected movements with status "pending" | Must have | Done | V0 |
 | FR-05 | Display daily list of pending movements on iPhone | Must have | Pending | V0 |
 | FR-06 | Confirm, edit, or discard each pending movement | Must have | Pending | V0 |
-| FR-07 | Manage custom categories (CRUD) | Must have | Pending | V0 |
-| FR-08 | Manage custom tags (CRUD) | Must have | Pending | V0 |
-| FR-09 | Browse confirmed movements by date | Must have | Pending | V0 |
+| FR-07 | Manage custom categories (CRUD) | Must have | Done | V0 |
+| FR-08 | Manage custom tags (CRUD) | Must have | Done | V0 |
+| FR-09 | Browse confirmed movements by date | Must have | Done | V0 |
 | FR-10 | Mark processed emails to avoid reprocessing | Must have | Done | V0 |
 | FR-11 | Export movements to CSV (MoneyStats compatible) | Should have | Pending | V1 |
 | FR-12 | AI suggests category based on historical patterns | Could have | Pending | V1 |
