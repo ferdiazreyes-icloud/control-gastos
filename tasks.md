@@ -55,7 +55,7 @@ Goal: FerDi can open the app on his iPhone, see expenses detected from his Gmail
 - [x] User acceptance testing with FerDi (test email: Walmart $847.50)
 - [x] Bank detection validated: Santander, Banamex, Uber, Uber Eats, PayPal (7/7 correct, 0 false positives)
 - [ ] Performance optimization (< 3s load time on iPhone)
-- [ ] Deploy to production (Vercel + Railway + Supabase)
+- [x] Deploy to production (Vercel + Railway + Supabase)
 - [ ] Playwright tests for frontend
 
 ---

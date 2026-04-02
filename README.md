@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 1.1.0 (dedup + sender whitelist — smart email filtering and duplicate detection)
+**Version:** 1.2.0 (production deploy — Supabase + Railway + Vercel)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -45,8 +45,11 @@
 - [x] Duplicate UI: grouped cards with "Conservar este" / "No son duplicados"
 - [x] Senders management screen (add/remove sender patterns)
 
+- [x] Production deploy: Supabase (DB), Railway (backend), Vercel (frontend)
+- [x] Gmail OAuth working in production
+- [x] End-to-end validated in production (Gmail → AI → movements in app)
+
 ### Pending (next steps)
-- [ ] Deploy to production (Vercel + Railway + Supabase)
 - [ ] Playwright tests for frontend
 
 ### Future Versions
@@ -114,6 +117,12 @@ cd frontend && npm install && npm run dev
 - Backend API: http://localhost:8000
 - API docs (Swagger): http://localhost:8000/docs
 - Frontend: http://localhost:3000
+
+### Production URLs
+
+- Frontend: https://control-gastos-six-theta.vercel.app
+- Backend API: https://control-gastos-backend-production-b64a.up.railway.app
+- Database: Supabase (PostgreSQL) via session pooler
 
 ### Run tests
 
