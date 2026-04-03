@@ -1,34 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import MovementCard from "@/components/MovementCard";
-import { getMovements } from "@/lib/api";
-import { Movement, MovementStatus } from "@/lib/types";
+import EditMovementModal from "@/components/EditMovementModal";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { getMovements, getCategories, getTags, updateMovement } from "@/lib/api";
+import { Movement, MovementStatus, Category, Tag } from "@/lib/types";
+
+interface StatusChange {
+  movementId: string;
+  newStatus: MovementStatus;
+  merchantOrConcept: string;
+}
 
 export default function HistoryPage() {
   const [movements, setMovements] = useState<Movement[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<MovementStatus | "all">("confirmed");
+  const [editingMovement, setEditingMovement] = useState<Movement | null>(null);
+  const [statusChange, setStatusChange] = useState<StatusChange | null>(null);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = filter === "all" ? {} : { status: filter as MovementStatus };
+      const [data, cats, tgs] = await Promise.all([
+        getMovements(params),
+        getCategories(),
+        getTags(),
+      ]);
+      setMovements(data);
+      setCategories(cats);
+      setTags(tgs);
+    } catch (err) {
+      console.error("Error loading history:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [filter]);
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const params = filter === "all" ? {} : { status: filter as MovementStatus };
-        const data = await getMovements(params);
-        setMovements(data);
-      } catch (err) {
-        console.error("Error loading history:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [filter]);
+    loadData();
+  }, [loadData]);
+
+  const handleStatusChange = async () => {
+    if (!statusChange) return;
+    try {
+      await updateMovement(statusChange.movementId, { status: statusChange.newStatus });
+      setStatusChange(null);
+      await loadData();
+    } catch (err) {
+      console.error("Error changing status:", err);
+    }
+  };
+
+  const handleSaveEdit = async (data: Record<string, unknown>) => {
+    if (!editingMovement) return;
+    try {
+      await updateMovement(editingMovement.id, data);
+      setEditingMovement(null);
+      await loadData();
+    } catch (err) {
+      console.error("Error saving edit:", err);
+    }
+  };
 
   const totalAmount = movements
     .filter((m) => m.type === "expense")
     .reduce((sum, m) => sum + Number(m.amount), 0);
+
+  const statusLabel = (s: MovementStatus) =>
+    s === "confirmed" ? "confirmar" : "descartar";
 
   return (
     <div className="space-y-4">
@@ -76,10 +120,47 @@ export default function HistoryPage() {
             <MovementCard
               key={movement.id}
               movement={movement}
-              showActions={false}
+              showActions={true}
+              onEdit={() => setEditingMovement(movement)}
+              onConfirm={() =>
+                setStatusChange({
+                  movementId: movement.id,
+                  newStatus: "confirmed",
+                  merchantOrConcept:
+                    movement.merchant || movement.concept || "este movimiento",
+                })
+              }
+              onDiscard={() =>
+                setStatusChange({
+                  movementId: movement.id,
+                  newStatus: "discarded",
+                  merchantOrConcept:
+                    movement.merchant || movement.concept || "este movimiento",
+                })
+              }
             />
           ))}
         </div>
+      )}
+
+      {editingMovement && (
+        <EditMovementModal
+          movement={editingMovement}
+          categories={categories}
+          tags={tags}
+          onSave={handleSaveEdit}
+          onClose={() => setEditingMovement(null)}
+        />
+      )}
+
+      {statusChange && (
+        <ConfirmDialog
+          title={`¿${statusChange.newStatus === "confirmed" ? "Confirmar" : "Descartar"} movimiento?`}
+          message={`¿Seguro que quieres ${statusLabel(statusChange.newStatus)} "${statusChange.merchantOrConcept}"?`}
+          confirmLabel={statusChange.newStatus === "confirmed" ? "Confirmar" : "Descartar"}
+          onConfirm={handleStatusChange}
+          onCancel={() => setStatusChange(null)}
+        />
       )}
     </div>
   );

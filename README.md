@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 1.2.0 (production deploy — Supabase + Railway + Vercel)
+**Version:** 1.3.0 (production deploy — Supabase + Railway + Vercel)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -44,6 +44,7 @@
 - [x] Pre-auth and progressive email handling (Uber $1 holds, Uber Eats multi-email)
 - [x] Duplicate UI: grouped cards with "Conservar este" / "No son duplicados"
 - [x] Senders management screen (add/remove sender patterns)
+- [x] History: edit movements and change status (confirmed ↔ discarded) with confirmation dialog
 
 - [x] Production deploy: Supabase (DB), Railway (backend), Vercel (frontend)
 - [x] Gmail OAuth working in production

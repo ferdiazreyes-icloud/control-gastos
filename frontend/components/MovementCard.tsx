@@ -135,10 +135,50 @@ export default function MovementCard({
         </div>
       )}
 
-      {movement.status === "confirmed" && (
+      {showActions && movement.status === "confirmed" && (
+        <div className="flex items-center gap-2 pt-1">
+          <span className="text-xs text-green-600 font-medium">Confirmado</span>
+          <div className="flex gap-2 ml-auto">
+            <button
+              onClick={onEdit}
+              className="bg-slate-200 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg active:bg-slate-300"
+            >
+              Editar
+            </button>
+            <button
+              onClick={onDiscard}
+              className="bg-red-100 text-red-600 text-xs font-medium px-3 py-1.5 rounded-lg active:bg-red-200"
+            >
+              Descartar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showActions && movement.status === "discarded" && (
+        <div className="flex items-center gap-2 pt-1">
+          <span className="text-xs text-red-500 font-medium">Descartado</span>
+          <div className="flex gap-2 ml-auto">
+            <button
+              onClick={onEdit}
+              className="bg-slate-200 text-slate-700 text-xs font-medium px-3 py-1.5 rounded-lg active:bg-slate-300"
+            >
+              Editar
+            </button>
+            <button
+              onClick={onConfirm}
+              className="bg-green-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg active:bg-green-600"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!showActions && movement.status === "confirmed" && (
         <div className="text-xs text-green-600 font-medium">Confirmado</div>
       )}
-      {movement.status === "discarded" && (
+      {!showActions && movement.status === "discarded" && (
         <div className="text-xs text-red-500 font-medium">Descartado</div>
       )}
     </div>
