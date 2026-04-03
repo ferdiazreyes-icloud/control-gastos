@@ -1,7 +1,11 @@
+import logging
+
 from fastapi import APIRouter
 from fastapi.responses import RedirectResponse
 
 from app.services.gmail import exchange_code_for_tokens, get_auth_url, is_authenticated
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -25,8 +29,15 @@ async def auth_login():
 @router.get("/google/callback")
 async def auth_callback(code: str):
     """Handle Google OAuth callback and store tokens."""
-    exchange_code_for_tokens(code)
-    return {
-        "status": "success",
-        "message": "Gmail authenticated successfully. You can close this window.",
-    }
+    try:
+        exchange_code_for_tokens(code)
+        return {
+            "status": "success",
+            "message": "Gmail authenticated successfully. You can close this window.",
+        }
+    except Exception as e:
+        logger.error("OAuth callback failed: %s", e)
+        return {
+            "status": "error",
+            "message": f"Authentication failed: {e}",
+        }

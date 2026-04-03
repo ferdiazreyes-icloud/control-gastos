@@ -43,6 +43,10 @@ def _create_flow() -> Flow:
 
 def get_auth_url() -> str:
     """Generate the Google OAuth authorization URL with PKCE."""
+    # Remove old token to force fresh auth with new scopes
+    if os.path.exists(TOKEN_PATH):
+        os.remove(TOKEN_PATH)
+
     flow = _create_flow()
     auth_url, state = flow.authorization_url(
         access_type="offline",
