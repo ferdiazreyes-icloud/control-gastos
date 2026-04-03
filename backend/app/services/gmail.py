@@ -50,7 +50,6 @@ def get_auth_url() -> str:
     flow = _create_flow()
     auth_url, state = flow.authorization_url(
         access_type="offline",
-        include_granted_scopes="true",
         prompt="consent",
     )
 
