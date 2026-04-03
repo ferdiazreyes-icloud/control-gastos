@@ -11,7 +11,7 @@ from app.models.processed_email import ProcessedEmail
 from app.models.sender_whitelist import SenderWhitelist
 from app.services.analyzer import analyze_emails
 from app.services.dedup import check_duplicates
-from app.services.gmail import fetch_emails
+from app.services.gmail import archive_emails, fetch_emails
 
 logger = logging.getLogger(__name__)
 
@@ -65,15 +65,14 @@ async def _get_sender_patterns(db: AsyncSession) -> list[str]:
 
 async def process_emails(
     db: AsyncSession,
-    max_results: int = 50,
 ) -> dict:
     """
-    Full pipeline: fetch emails → analyze with AI → deduplicate → store.
+    Full pipeline: fetch emails → analyze with AI → deduplicate → store → archive.
 
-    Only fetches emails from inbox (not archived/trash).
-    Uses sender whitelist to filter Gmail queries.
+    Paginates through ALL inbox emails matching sender whitelist.
     Skips already-processed emails via processed_emails table.
     Checks for duplicates before storing movements.
+    Archives processed emails from Gmail inbox after storing.
     """
     # Step 1: Get already processed email IDs
     result = await db.execute(select(ProcessedEmail.gmail_message_id))
@@ -82,9 +81,8 @@ async def process_emails(
     # Step 2: Load sender whitelist patterns
     sender_patterns = await _get_sender_patterns(db)
 
-    # Step 3: Fetch new emails from Gmail inbox (filtered by senders)
+    # Step 3: Fetch new emails from Gmail inbox (paginated, filtered by senders)
     emails = fetch_emails(
-        max_results=max_results,
         processed_ids=processed_ids,
         sender_patterns=sender_patterns if sender_patterns else None,
     )
@@ -168,11 +166,17 @@ async def process_emails(
 
     await db.commit()
 
+    # Archive all processed emails from Gmail inbox
+    processed_email_ids = [d["email_id"] for d in details]
+    archived_count = archive_emails(processed_email_ids)
+    logger.info("Archived %d/%d processed emails from inbox", archived_count, len(processed_email_ids))
+
     return {
         "status": "success",
         "emails_fetched": len(emails),
         "movements_detected": sum(1 for d in details if d["has_movement"]),
         "movements_stored": movements_stored,
         "duplicates_found": duplicates_found,
+        "emails_archived": archived_count,
         "details": details,
     }

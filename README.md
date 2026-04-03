@@ -4,7 +4,7 @@
 
 ## Status
 
-**Version:** 1.3.0 (production deploy — Supabase + Railway + Vercel)
+**Version:** 1.4.0 (production deploy — Supabase + Railway + Vercel)
 
 ### Implemented
 - [x] Project setup (repo, template, branch rules)
@@ -39,7 +39,8 @@
 - [x] End-to-end validated: Gmail → AI → movement appears in app
 - [x] Bank email detection validated: Santander, Banamex, Uber, Uber Eats, PayPal (7/7 detected, 0 false positives)
 - [x] Sender whitelist: only analyze emails from known financial senders (dynamic, manageable from app)
-- [x] Inbox-only filter: only fetch emails from inbox (supports archive-when-reviewed workflow)
+- [x] Inbox-only filter with full pagination (finds ALL matching emails, not just first 50)
+- [x] Auto-archive: processed emails are archived from Gmail inbox after processing
 - [x] Duplicate detection: scoring algorithm (amount + merchant + date + account)
 - [x] Pre-auth and progressive email handling (Uber $1 holds, Uber Eats multi-email)
 - [x] Duplicate UI: grouped cards with "Conservar este" / "No son duplicados"

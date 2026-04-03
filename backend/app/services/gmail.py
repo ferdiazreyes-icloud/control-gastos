@@ -16,7 +16,7 @@ from app.config import settings
 TOKEN_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "token.json")
 STATE_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "oauth_state.json")
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.modify"]
 
 
 def _get_client_config() -> dict:
@@ -183,19 +183,17 @@ def _extract_header(headers: list, name: str) -> str:
 
 
 def fetch_emails(
-    max_results: int = 50,
     processed_ids: Optional[set] = None,
     sender_patterns: Optional[list[str]] = None,
 ) -> list[dict]:
     """
-    Fetch emails from Gmail inbox.
+    Fetch all unprocessed emails from Gmail inbox, with pagination.
 
-    Only searches the inbox (not archived/trash). Already-processed emails
-    are filtered out via processed_ids. This supports the user workflow:
-    emails stay in inbox until reviewed, then get archived.
+    Paginates through ALL inbox emails matching sender whitelist.
+    Already-processed emails are skipped before fetching full details.
+    After processing, emails should be archived via archive_emails().
 
     Args:
-        max_results: Maximum number of emails to fetch.
         processed_ids: Set of Gmail message IDs already processed (to skip).
         sender_patterns: List of sender email patterns to filter by
             (e.g. ["@santander.com.mx", "noreply@uber.com"]).
@@ -214,25 +212,33 @@ def fetch_emails(
 
     query = " ".join(query_parts)
 
-    # List messages
-    results = (
-        service.users()
-        .messages()
-        .list(userId="me", maxResults=max_results, q=query)
-        .execute()
-    )
+    # List ALL matching messages with pagination
+    all_message_refs = []
+    next_page_token = None
 
-    messages = results.get("messages", [])
-    if not messages:
+    while True:
+        params = {"userId": "me", "q": query, "maxResults": 500}
+        if next_page_token:
+            params["pageToken"] = next_page_token
+
+        results = service.users().messages().list(**params).execute()
+        messages = results.get("messages", [])
+        all_message_refs.extend(messages)
+
+        next_page_token = results.get("nextPageToken")
+        if not next_page_token:
+            break
+
+    if not all_message_refs:
         return []
 
-    # Filter out already processed emails
+    # Filter out already processed emails before fetching full details
     if processed_ids:
-        messages = [m for m in messages if m["id"] not in processed_ids]
+        all_message_refs = [m for m in all_message_refs if m["id"] not in processed_ids]
 
     # Fetch full message details
     emails = []
-    for msg_ref in messages:
+    for msg_ref in all_message_refs:
         msg = (
             service.users()
             .messages()
@@ -266,3 +272,34 @@ def fetch_emails(
         )
 
     return emails
+
+
+def archive_emails(email_ids: list[str]) -> int:
+    """
+    Archive emails by removing the INBOX label.
+
+    Args:
+        email_ids: List of Gmail message IDs to archive.
+
+    Returns:
+        Number of emails successfully archived.
+    """
+    if not email_ids:
+        return 0
+
+    service = _get_gmail_service()
+    archived = 0
+
+    for email_id in email_ids:
+        try:
+            service.users().messages().modify(
+                userId="me",
+                id=email_id,
+                body={"removeLabelIds": ["INBOX"]},
+            ).execute()
+            archived += 1
+        except Exception:
+            # Log but don't fail the whole pipeline for archive errors
+            pass
+
+    return archived

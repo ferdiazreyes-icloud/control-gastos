@@ -53,7 +53,7 @@ export default function ReviewPage() {
     setProcessing(true);
     setProcessResult(null);
     try {
-      const result = await processEmails(20);
+      const result = await processEmails();
       const parts = [
         `${result.emails_fetched} correos analizados`,
         `${result.movements_stored} movimientos detectados`,

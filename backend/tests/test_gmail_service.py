@@ -51,7 +51,7 @@ def test_fetch_emails_empty(mock_service):
     mock_gmail.users().messages().list().execute.return_value = {"messages": []}
     mock_service.return_value = mock_gmail
 
-    result = fetch_emails(max_results=10)
+    result = fetch_emails()
     assert result == []
 
 
@@ -83,6 +83,6 @@ def test_fetch_emails_skips_processed(mock_service):
     }
     mock_service.return_value = mock_gmail
 
-    result = fetch_emails(max_results=10, processed_ids={"msg1", "msg3"})
+    result = fetch_emails(processed_ids={"msg1", "msg3"})
     assert len(result) == 1
     assert result[0]["id"] == "msg2"

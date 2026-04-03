@@ -76,8 +76,8 @@ export const deleteTag = (id: string) =>
   apiFetch<void>(`/api/tags/${id}`, { method: "DELETE" });
 
 // Email processing
-export const processEmails = (maxResults = 20) =>
-  apiFetch<ProcessResult>(`/api/emails/process?max_results=${maxResults}`, {
+export const processEmails = () =>
+  apiFetch<ProcessResult>("/api/emails/process", {
     method: "POST",
   });
 

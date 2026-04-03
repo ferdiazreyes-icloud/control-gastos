@@ -32,12 +32,12 @@ async def email_status(db: AsyncSession = Depends(get_db)):
 
 @router.post("/fetch")
 async def fetch_new_emails(
-    max_results: int = 50,
     db: AsyncSession = Depends(get_db),
 ):
     """
     Fetch new emails from Gmail inbox (raw, without AI analysis).
 
+    Paginates through all inbox emails matching sender whitelist.
     Useful for previewing what emails will be processed.
     """
     if not is_authenticated():
@@ -50,7 +50,6 @@ async def fetch_new_emails(
     processed_ids = {row[0] for row in result.all()}
 
     emails = fetch_emails(
-        max_results=max_results,
         processed_ids=processed_ids,
     )
 
@@ -64,17 +63,17 @@ async def fetch_new_emails(
 
 @router.post("/process")
 async def process_new_emails(
-    max_results: int = 50,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Full pipeline: fetch inbox emails → analyze with AI → store movements.
+    Full pipeline: fetch inbox emails → analyze with AI → store → archive.
 
     This is the main endpoint that does everything:
-    1. Fetches new emails from Gmail inbox only
+    1. Paginates through ALL inbox emails matching sender whitelist
     2. Sends them to Claude AI for analysis
     3. Stores detected movements in the database as "pending"
-    4. Skips already-processed emails (tracked in processed_emails table)
+    4. Archives processed emails from Gmail inbox
+    5. Skips already-processed emails (tracked in processed_emails table)
     """
     if not is_authenticated():
         return {
@@ -82,9 +81,6 @@ async def process_new_emails(
             "message": "Gmail not connected. Go to /auth/login first.",
         }
 
-    result = await process_emails(
-        db=db,
-        max_results=max_results,
-    )
+    result = await process_emails(db=db)
 
     return result
