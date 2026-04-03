@@ -62,29 +62,17 @@ async def _get_sender_patterns(db: AsyncSession) -> list[str]:
     return [row[0] for row in result.all()]
 
 
-async def _get_last_processed_date(db: AsyncSession) -> Optional[str]:
-    """Get the date of the last processed email for auto-dating."""
-    result = await db.execute(
-        select(ProcessedEmail.processed_at)
-        .order_by(ProcessedEmail.processed_at.desc())
-        .limit(1)
-    )
-    row = result.scalar_one_or_none()
-    if row:
-        return row.strftime("%Y/%m/%d")
-    return None
-
 
 async def process_emails(
     db: AsyncSession,
     max_results: int = 50,
-    after_date: Optional[str] = None,
 ) -> dict:
     """
     Full pipeline: fetch emails → analyze with AI → deduplicate → store.
 
+    Only fetches emails from inbox (not archived/trash).
     Uses sender whitelist to filter Gmail queries.
-    Uses auto-date from last processed email if no after_date given.
+    Skips already-processed emails via processed_emails table.
     Checks for duplicates before storing movements.
     """
     # Step 1: Get already processed email IDs
@@ -94,14 +82,9 @@ async def process_emails(
     # Step 2: Load sender whitelist patterns
     sender_patterns = await _get_sender_patterns(db)
 
-    # Step 3: Auto-date if not provided
-    if not after_date:
-        after_date = await _get_last_processed_date(db)
-
-    # Step 4: Fetch new emails from Gmail (filtered by senders + date)
+    # Step 3: Fetch new emails from Gmail inbox (filtered by senders)
     emails = fetch_emails(
         max_results=max_results,
-        after_date=after_date,
         processed_ids=processed_ids,
         sender_patterns=sender_patterns if sender_patterns else None,
     )

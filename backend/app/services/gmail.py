@@ -184,16 +184,18 @@ def _extract_header(headers: list, name: str) -> str:
 
 def fetch_emails(
     max_results: int = 50,
-    after_date: Optional[str] = None,
     processed_ids: Optional[set] = None,
     sender_patterns: Optional[list[str]] = None,
 ) -> list[dict]:
     """
-    Fetch emails from Gmail.
+    Fetch emails from Gmail inbox.
+
+    Only searches the inbox (not archived/trash). Already-processed emails
+    are filtered out via processed_ids. This supports the user workflow:
+    emails stay in inbox until reviewed, then get archived.
 
     Args:
         max_results: Maximum number of emails to fetch.
-        after_date: Only fetch emails after this date (format: YYYY/MM/DD).
         processed_ids: Set of Gmail message IDs already processed (to skip).
         sender_patterns: List of sender email patterns to filter by
             (e.g. ["@santander.com.mx", "noreply@uber.com"]).
@@ -203,17 +205,14 @@ def fetch_emails(
     """
     service = _get_gmail_service()
 
-    # Build query
-    query_parts = []
-    if after_date:
-        query_parts.append(f"after:{after_date}")
+    # Build query: only inbox emails from whitelisted senders
+    query_parts = ["in:inbox"]
 
-    # Build sender filter: from:(@santander.com.mx OR noreply@uber.com OR ...)
     if sender_patterns:
         from_clauses = " OR ".join(f"from:{pattern}" for pattern in sender_patterns)
         query_parts.append(f"({from_clauses})")
 
-    query = " ".join(query_parts) if query_parts else None
+    query = " ".join(query_parts)
 
     # List messages
     results = (

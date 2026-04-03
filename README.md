@@ -39,7 +39,7 @@
 - [x] End-to-end validated: Gmail → AI → movement appears in app
 - [x] Bank email detection validated: Santander, Banamex, Uber, Uber Eats, PayPal (7/7 detected, 0 false positives)
 - [x] Sender whitelist: only analyze emails from known financial senders (dynamic, manageable from app)
-- [x] Auto-date filter: only fetch emails since last processing run
+- [x] Inbox-only filter: only fetch emails from inbox (supports archive-when-reviewed workflow)
 - [x] Duplicate detection: scoring algorithm (amount + merchant + date + account)
 - [x] Pre-auth and progressive email handling (Uber $1 holds, Uber Eats multi-email)
 - [x] Duplicate UI: grouped cards with "Conservar este" / "No son duplicados"

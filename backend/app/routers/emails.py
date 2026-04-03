@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,11 +33,10 @@ async def email_status(db: AsyncSession = Depends(get_db)):
 @router.post("/fetch")
 async def fetch_new_emails(
     max_results: int = 50,
-    after_date: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Fetch new emails from Gmail (raw, without AI analysis).
+    Fetch new emails from Gmail inbox (raw, without AI analysis).
 
     Useful for previewing what emails will be processed.
     """
@@ -54,7 +51,6 @@ async def fetch_new_emails(
 
     emails = fetch_emails(
         max_results=max_results,
-        after_date=after_date,
         processed_ids=processed_ids,
     )
 
@@ -69,16 +65,16 @@ async def fetch_new_emails(
 @router.post("/process")
 async def process_new_emails(
     max_results: int = 50,
-    after_date: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Full pipeline: fetch emails → analyze with AI → store movements.
+    Full pipeline: fetch inbox emails → analyze with AI → store movements.
 
     This is the main endpoint that does everything:
-    1. Fetches new emails from Gmail
+    1. Fetches new emails from Gmail inbox only
     2. Sends them to Claude AI for analysis
     3. Stores detected movements in the database as "pending"
+    4. Skips already-processed emails (tracked in processed_emails table)
     """
     if not is_authenticated():
         return {
@@ -89,7 +85,6 @@ async def process_new_emails(
     result = await process_emails(
         db=db,
         max_results=max_results,
-        after_date=after_date,
     )
 
     return result
