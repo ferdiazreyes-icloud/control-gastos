@@ -49,7 +49,7 @@ async def fetch_new_emails(
     result = await db.execute(select(ProcessedEmail.gmail_message_id))
     processed_ids = {row[0] for row in result.all()}
 
-    emails = fetch_emails(
+    emails, _stale_ids = fetch_emails(
         processed_ids=processed_ids,
     )
 

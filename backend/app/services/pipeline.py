@@ -82,10 +82,16 @@ async def process_emails(
     sender_patterns = await _get_sender_patterns(db)
 
     # Step 3: Fetch new emails from Gmail inbox (paginated, filtered by senders)
-    emails = fetch_emails(
+    emails, stale_inbox_ids = fetch_emails(
         processed_ids=processed_ids,
         sender_patterns=sender_patterns if sender_patterns else None,
     )
+
+    # Step 3b: Archive previously-processed emails still sitting in inbox
+    stale_archived = 0
+    if stale_inbox_ids:
+        stale_archived = archive_emails(stale_inbox_ids)
+        logger.info("Archived %d stale emails from inbox", stale_archived)
 
     if not emails:
         return {
@@ -94,6 +100,7 @@ async def process_emails(
             "movements_detected": 0,
             "movements_stored": 0,
             "duplicates_found": 0,
+            "emails_archived": stale_archived,
             "details": [],
         }
 
@@ -166,10 +173,11 @@ async def process_emails(
 
     await db.commit()
 
-    # Archive all processed emails from Gmail inbox
+    # Archive newly processed emails from Gmail inbox
     processed_email_ids = [d["email_id"] for d in details]
-    archived_count = archive_emails(processed_email_ids)
-    logger.info("Archived %d/%d processed emails from inbox", archived_count, len(processed_email_ids))
+    new_archived = archive_emails(processed_email_ids)
+    archived_count = stale_archived + new_archived
+    logger.info("Archived %d emails from inbox (%d stale + %d new)", archived_count, stale_archived, new_archived)
 
     return {
         "status": "success",

@@ -199,7 +199,10 @@ def fetch_emails(
             (e.g. ["@santander.com.mx", "noreply@uber.com"]).
 
     Returns:
-        List of dicts with email data: id, subject, sender, date, body.
+        Tuple of (new_emails, stale_inbox_ids):
+        - new_emails: List of dicts with email data for unprocessed emails.
+        - stale_inbox_ids: List of Gmail IDs for already-processed emails
+          still in inbox (should be archived).
     """
     service = _get_gmail_service()
 
@@ -230,15 +233,20 @@ def fetch_emails(
             break
 
     if not all_message_refs:
-        return []
+        return [], []
 
-    # Filter out already processed emails before fetching full details
-    if processed_ids:
-        all_message_refs = [m for m in all_message_refs if m["id"] not in processed_ids]
+    # Separate already-processed emails (still in inbox) from new ones
+    already_in_inbox = []
+    new_message_refs = []
+    for m in all_message_refs:
+        if processed_ids and m["id"] in processed_ids:
+            already_in_inbox.append(m["id"])
+        else:
+            new_message_refs.append(m)
 
-    # Fetch full message details
+    # Fetch full message details for new emails only
     emails = []
-    for msg_ref in all_message_refs:
+    for msg_ref in new_message_refs:
         msg = (
             service.users()
             .messages()
@@ -271,7 +279,7 @@ def fetch_emails(
             }
         )
 
-    return emails
+    return emails, already_in_inbox
 
 
 def archive_emails(email_ids: list[str]) -> int:

@@ -51,8 +51,9 @@ def test_fetch_emails_empty(mock_service):
     mock_gmail.users().messages().list().execute.return_value = {"messages": []}
     mock_service.return_value = mock_gmail
 
-    result = fetch_emails()
-    assert result == []
+    emails, stale_ids = fetch_emails()
+    assert emails == []
+    assert stale_ids == []
 
 
 @patch("app.services.gmail._get_gmail_service")
@@ -83,6 +84,7 @@ def test_fetch_emails_skips_processed(mock_service):
     }
     mock_service.return_value = mock_gmail
 
-    result = fetch_emails(processed_ids={"msg1", "msg3"})
-    assert len(result) == 1
-    assert result[0]["id"] == "msg2"
+    emails, stale_ids = fetch_emails(processed_ids={"msg1", "msg3"})
+    assert len(emails) == 1
+    assert emails[0]["id"] == "msg2"
+    assert set(stale_ids) == {"msg1", "msg3"}
