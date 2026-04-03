@@ -121,6 +121,7 @@ export default function HistoryPage() {
               key={movement.id}
               movement={movement}
               showActions={true}
+              showEmailInfo={true}
               onEdit={() => setEditingMovement(movement)}
               onConfirm={() =>
                 setStatusChange({

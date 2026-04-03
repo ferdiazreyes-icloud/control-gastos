@@ -189,6 +189,7 @@ export default function ReviewPage() {
             <MovementCard
               key={movement.id}
               movement={movement}
+              showEmailInfo={true}
               onConfirm={() => handleConfirm(movement.id)}
               onDiscard={() => handleDiscard(movement.id)}
               onEdit={() => handleEdit(movement)}
